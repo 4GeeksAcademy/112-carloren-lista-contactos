@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Cards } from "../components/Cards.jsx";
 import { Link } from "react-router-dom";
+import { AddContactForm } from "../components/AddContactForm.jsx"
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 
 export const Home = () => {
@@ -8,6 +11,10 @@ export const Home = () => {
 	const [usuario, setUsuario] = useState("")
 	const [usuarioAnterior, setUsuarioAnterior] = useState("")
 	const [render, setRender] = useState("")
+	const [show, setShow] = useState(false);
+
+	const handleClose = () => setShow(false);
+	const handleShow = () => setShow(true);
 
 	function getContactList() {
 		fetch('https://playground.4geeks.com/contact/agendas/' + usuario + '/contacts', { method: "GET" }) //busca info en la url
@@ -48,18 +55,19 @@ export const Home = () => {
 	}
 
 	function deleteUser(user) {
-		fetch('https://playground.4geeks.com/contact/agendas/' + user, { method: "DELETE" })
-			.then((response) => {
-				if (confirm("¿Quieres borrar el usuario " + usuario + "?")) {
+		if (confirm("¿Quieres borrar el usuario " + usuario + "?")) {
+			fetch('https://playground.4geeks.com/contact/agendas/' + user, { method: "DELETE" })
+				.then((response) => {
+
 					if (response.status === 204) {
 						setUsuario(usuarioAnterior)
 					}
 				}
 
-			})
-			.then()
-			.catch()
-
+				)
+				.then()
+				.catch()
+		}
 	}
 
 	useEffect(() => {
@@ -84,11 +92,18 @@ export const Home = () => {
 		<div className="container text-center mt-5 w-75">
 			<input type="text" className="shadow-lg rounded p-2 my-3 mx-auto" placeholder="Usuario" onKeyDown={changeUser} />
 			<h1 className="mb-3">{usuario === "" ? "Escriba el usuario de la agenda" : "Lista de contactos de " + usuario + ":"}</h1>
-			<Link to="/add-contact" className={usuario === "" ? "btn btn-info me-0 align-self-end hide" : "btn btn-info me-0 align-self-end"}>Añadir Contacto</Link>  {/* Basta con poner una clase de botón en la etiqueta link, no hace falta añadir etiqueta botón */}
+			<button onClick={handleShow} className={usuario === "" ? "btn btn-info me-0 align-self-end hide" : "btn btn-info me-0 align-self-end"}>Añadir Contacto</button>  {/* Basta con poner una clase de botón en la etiqueta link, no hace falta añadir etiqueta botón */}
 
 			{render}
 			<button className={usuario === "" ? "btn btn-danger me-0 hide align-self-end" : "btn btn-danger me-0 align-self-end"} onClick={() => deleteUser(usuario)}>Eliminar usuario</button>
-
+			<Modal show={show} onHide={handleClose}>
+				<Modal.Header closeButton>
+					<Modal.Title>Añadir contacto</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<AddContactForm user={usuario} getContactList={() => getContactList()} handleClose={() => handleClose()} />
+				</Modal.Body>
+			</Modal>
 		</div>
 	);
-}; 
+};

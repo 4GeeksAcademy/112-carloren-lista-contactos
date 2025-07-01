@@ -1,13 +1,39 @@
 import { Link } from "react-router-dom";
+import { AddContact } from "../pages/AddContact";
 
 
-export const AddContactForm = () => {
+export const AddContactForm = ({ user, getContactList, handleClose }) => {
 
+    function addContactToList(event) {
+        event.preventDefault();
+        // console.log(event.target.fullName.value);
+        fetch('https://playground.4geeks.com/contact/agendas/' + user + '/contacts', {
+            method: "POST",
+            body: JSON.stringify({
+                "name": event.target.fullName.value,
+                "phone": event.target.phone.value,
+                "email": event.target.email.value,
+                "address": event.target.address.value
+            }),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then((response) => {
+                if (response.status === 201) {
+                    getContactList()
+                }
+
+                return response.json()
+            })
+            .then()
+            .catch()
+        handleClose()
+    }
 
     return (
-        <div className="text-center mt-5 container d-flex flex-column">
-            <h1>Añade un contacto</h1>
-            <form className="border rounded w-50 p-4 mx-auto d-flex flex-column text-start">
+        <div className="text-center m-0 container-flex d-flex flex-column">
+            <form className="w-100 p-4 mx-auto d-flex flex-column text-start" onSubmit={addContactToList}>
                 <div className="mb-3 ">
                     <label htmlFor="fullName" className="form-label">Nombre Completo:</label>
                     <input type="text" className="form-control" id="fullName" placeholder="Nombre y apellidos" />
@@ -26,7 +52,6 @@ export const AddContactForm = () => {
                 </div>
                 <button type="submit" className="btn btn-primary align-self-center mx-auto">Enviar</button>
             </form>
-            <Link to="/">Volver a inicio</Link>
         </div>
     );
 }; 

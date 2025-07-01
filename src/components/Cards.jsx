@@ -4,7 +4,7 @@ export const Cards = ({ usuario, contactList, getContactList }) => {
         fetch('https://playground.4geeks.com/contact/agendas/' + usuario + '/contacts/' + id, { method: "DELETE" })
             .then((response) => {
                 if (response.status === 204) {
-                    {getContactList}
+                    getContactList()
                 }
             })
             .then()
