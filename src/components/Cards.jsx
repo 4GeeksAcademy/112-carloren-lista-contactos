@@ -1,4 +1,16 @@
+import { useState } from 'react';
+import Modal from 'react-bootstrap/Modal';
+import { EditContactForm } from './EditContactForm';
+
+
 export const Cards = ({ usuario, contactList, getContactList }) => {
+
+    const [currentContact, setCurrentContact] = useState("")
+
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     function deleteContact(id) {
         fetch('https://playground.4geeks.com/contact/agendas/' + usuario + '/contacts/' + id, { method: "DELETE" })
@@ -25,13 +37,22 @@ export const Cards = ({ usuario, contactList, getContactList }) => {
                             <p className="card-text"><i className="fa-solid fa-envelope"></i>&nbsp;&nbsp;&nbsp;{item.email}</p>
                         </div>
                         <div className="card-body text-end">
-                            <p><i className="crossButton btn fa-solid fa-pencil"></i></p>
+                            <p><i className="crossButton btn fa-solid fa-pencil" onClick={() => { setCurrentContact(item); handleShow() }}></i></p>
                             <p><i className="crossButton btn fa-solid fa-trash" onClick={() => deleteContact(item.id)}></i></p>
                         </div>
+
                     </div >
                 </div >
             ))
             }
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Editar contacto</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <EditContactForm user={usuario} contact={currentContact} getContactList={() => getContactList()} handleClose={() => handleClose()} />
+                </Modal.Body>
+            </Modal>
         </div >
     );
 };

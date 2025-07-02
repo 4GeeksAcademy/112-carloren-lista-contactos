@@ -1,20 +1,15 @@
 import { useEffect, useState } from "react";
 import { Cards } from "../components/Cards.jsx";
 import { Link } from "react-router-dom";
-import { AddContactForm } from "../components/AddContactForm.jsx"
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 
 
 export const Home = () => {
 	const [contactList, setContactList] = useState([])
-	const [usuario, setUsuario] = useState("")
+	const [usuario, setUsuario] = useState(localStorage.getItem("fromForm") === "true" ? (localStorage.getItem("usuario") != null ? localStorage.getItem("usuario") : "") : "")
 	const [usuarioAnterior, setUsuarioAnterior] = useState("")
 	const [render, setRender] = useState("")
-	const [show, setShow] = useState(false);
 
-	const handleClose = () => setShow(false);
-	const handleShow = () => setShow(true);
+	setTimeout(() => localStorage.removeItem("fromForm"), 1000)
 
 	function getContactList() {
 		fetch('https://playground.4geeks.com/contact/agendas/' + usuario + '/contacts', { method: "GET" }) //busca info en la url
@@ -74,6 +69,8 @@ export const Home = () => {
 		//código que queremos que se ejecute al cargar el componente
 		if (usuario != "") {
 			getContactList()
+			localStorage.setItem("usuario", usuario);
+
 		}
 	}, [usuario])
 
@@ -81,7 +78,7 @@ export const Home = () => {
 		//código que queremos que se ejecute al cargar el componente
 		if (contactList != []) {
 			setRender(
-				<div className="container text-end mt-5 w-75">
+				<div className="container text-end w-75">
 					<Cards usuario={usuario} contactList={contactList} getContactList={() => getContactList()} />
 				</div>
 			)
@@ -92,18 +89,10 @@ export const Home = () => {
 		<div className="container text-center mt-5 w-75">
 			<input type="text" className="shadow-lg rounded p-2 my-3 mx-auto" placeholder="Usuario" onKeyDown={changeUser} />
 			<h1 className="mb-3">{usuario === "" ? "Escriba el usuario de la agenda" : "Lista de contactos de " + usuario + ":"}</h1>
-			<button onClick={handleShow} className={usuario === "" ? "btn btn-info me-0 align-self-end hide" : "btn btn-info me-0 align-self-end"}>Añadir Contacto</button>  {/* Basta con poner una clase de botón en la etiqueta link, no hace falta añadir etiqueta botón */}
+			<Link to="/add-contact" className={usuario === "" ? "btn btn-info hide my-2" : "btn btn-info my-2"}>Añadir Contacto</Link>  {/* Basta con poner una clase de botón en la etiqueta link, no hace falta añadir etiqueta botón */}
 
 			{render}
-			<button className={usuario === "" ? "btn btn-danger me-0 hide align-self-end" : "btn btn-danger me-0 align-self-end"} onClick={() => deleteUser(usuario)}>Eliminar usuario</button>
-			<Modal show={show} onHide={handleClose}>
-				<Modal.Header closeButton>
-					<Modal.Title>Añadir contacto</Modal.Title>
-				</Modal.Header>
-				<Modal.Body>
-					<AddContactForm user={usuario} getContactList={() => getContactList()} handleClose={() => handleClose()} />
-				</Modal.Body>
-			</Modal>
+			<button className={usuario === "" ? "btn btn-danger hide my-2" : "btn btn-danger my-2"} onClick={() => deleteUser(usuario)}>Eliminar usuario</button>
 		</div>
 	);
 };

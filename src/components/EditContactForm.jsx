@@ -1,51 +1,42 @@
 import { useState } from "react";
 
-export const AddContactForm = () => {
+export const EditContactForm = ({ user, contact, getContactList, handleClose }) => {
 
-    const [name, setName] = useState("")
-    const [phone, setPhone] = useState("")
-    const [email, setEmail] = useState("")
-    const [address, setAddress] = useState("")
+    const [name, setName] = useState(contact.name)
+    const [phone, setPhone] = useState(contact.phone)
+    const [email, setEmail] = useState(contact.email)
+    const [address, setAddress] = useState(contact.address)
 
-    const [respuesta, setRespuesta] = useState("")
-
-    function addContactToList(event) {
+    async function editContactFromList(event) {
         event.preventDefault();
         // console.log(event.target.fullName.value);
-        let user = localStorage.getItem("usuario");
-
-        fetch('https://playground.4geeks.com/contact/agendas/' + user + '/contacts', {
-            method: "POST",
-            body: JSON.stringify({
-                "name": name,
-                "phone": phone,
-                "email": email,
-                "address": address
-            }),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-            .then((response) => {
-                if (response.status === 201) {
-                    setRespuesta(
-                        <p>El contacto ha sido añadido correctamente a {user}</p>
-                    )
-                    setName("")
-                    setAddress("")
-                    setPhone("")
-                    setEmail("")
+        try {
+            let response = await fetch('https://playground.4geeks.com/contact/agendas/' + user + '/contacts/' + contact.id, {
+                method: "PUT",
+                body: JSON.stringify({
+                    "name": name,
+                    "phone": phone,
+                    "email": email,
+                    "address": address
+                }),
+                headers: {
+                    "Content-Type": "application/json"
                 }
-
-                return response.json()
             })
-            .then()
-            .catch()
+            if (response.ok) {
+                getContactList()
+                handleClose()
+
+            }
+
+            return response.json()
+
+        } catch { }
     }
 
     return (
         <div className="text-center m-0 container-flex d-flex flex-column">
-            <form className="w-100 p-4 mx-auto d-flex flex-column text-start" onSubmit={addContactToList}>
+            <form className="w-100 p-4 mx-auto d-flex flex-column text-start" onSubmit={editContactFromList}>
                 <div className="mb-3 ">
                     <label htmlFor="fullName" className="form-label">Nombre Completo:</label>
                     <input type="text" className="form-control" id="fullName" placeholder="Nombre y apellidos" value={name} onChange={(event) => setName(event.target.value)} />
@@ -62,9 +53,11 @@ export const AddContactForm = () => {
                     <label htmlFor="email" className="form-label">Correo electrónico:</label>
                     <input type="email" className="form-control" id="email" placeholder="correo@example.com" value={email} onChange={(event) => setEmail(event.target.value)} />
                 </div>
-                <button type="submit" className="btn btn-primary align-self-center mx-auto">Enviar</button>
+                <div className="d-flex">
+                    <button type="submit" className="btn btn-info align-self-center mx-auto">Confirmar</button>
+                    <button className="btn btn-danger align-self-center mx-auto" onClick={handleClose}>Cancelar</button>
+                </div>
             </form>
-            {respuesta}
         </div>
     );
 }; 
