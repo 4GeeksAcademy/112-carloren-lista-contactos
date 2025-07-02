@@ -2,14 +2,16 @@ import { useState } from "react";
 
 export const EditContactForm = ({ user, contact, getContactList, handleClose }) => {
 
-    const [name, setName] = useState(contact.name)
-    const [phone, setPhone] = useState(contact.phone)
-    const [email, setEmail] = useState(contact.email)
-    const [address, setAddress] = useState(contact.address)
+    const [name, setName] = useState(contact.name)                      //
+    const [phone, setPhone] = useState(contact.phone)                   //guardamos en variables las propiedades del objeto contacto...
+    const [email, setEmail] = useState(contact.email)                   //...para poder mostrarlas en el formulario
+    const [address, setAddress] = useState(contact.address)             //
+
+    
+    //-------------------EDITAR CONTACTO--------------------
 
     async function editContactFromList(event) {
         event.preventDefault();
-        // console.log(event.target.fullName.value);
         try {
             let response = await fetch('https://playground.4geeks.com/contact/agendas/' + user + '/contacts/' + contact.id, {
                 method: "PUT",
@@ -34,7 +36,7 @@ export const EditContactForm = ({ user, contact, getContactList, handleClose }) 
         } catch { }
     }
 
-    return (
+    return (                                                            //en cada input mostramos el valor que tenía el contacto a través de las variables para facilitar la edición
         <div className="text-center m-0 container-flex d-flex flex-column">
             <form className="w-100 p-4 mx-auto d-flex flex-column text-start" onSubmit={editContactFromList}>
                 <div className="mb-3 ">

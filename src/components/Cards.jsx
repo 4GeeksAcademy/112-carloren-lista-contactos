@@ -5,12 +5,14 @@ import { EditContactForm } from './EditContactForm';
 
 export const Cards = ({ usuario, contactList, getContactList }) => {
 
-    const [currentContact, setCurrentContact] = useState("")
+    const [currentContact, setCurrentContact] = useState("")            //nos servirá para guardar y mostrar el contacto en el fromulario de edición
 
-    const [show, setShow] = useState(false);
+    const [show, setShow] = useState(false);                            //
+    const handleClose = () => setShow(false);                           //variable y funciones que manejan el formulario modal
+    const handleShow = () => setShow(true);                             //
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    
+    //-------------------BORRAR CONTACTO--------------------
 
     function deleteContact(id) {
         fetch('https://playground.4geeks.com/contact/agendas/' + usuario + '/contacts/' + id, { method: "DELETE" })
@@ -26,7 +28,7 @@ export const Cards = ({ usuario, contactList, getContactList }) => {
 
     return (
         <div className="d-flex flex-column text-center">
-            {contactList.map((item, index) => (
+            {contactList.map((item, index) => (                         //renderizamos cada contacto en una card diferente
                 <div key={index} className="card my-2" >
                     < div className="d-flex" >
                         <img style={{ maxHeight: "200px" }} src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" className="img-fluid rounded-circle m-2 " alt="..." />
@@ -45,11 +47,11 @@ export const Cards = ({ usuario, contactList, getContactList }) => {
                 </div >
             ))
             }
-            <Modal show={show} onHide={handleClose}>
+            <Modal show={show} onHide={handleClose}>                    {/*componente modal de bootstrap para react*/}
                 <Modal.Header closeButton>
                     <Modal.Title>Editar contacto</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body>                                            {/*↓↓↓ llamamos al formulario pasándole el contacto y las funciones necesarias */}
                     <EditContactForm user={usuario} contact={currentContact} getContactList={() => getContactList()} handleClose={() => handleClose()} />
                 </Modal.Body>
             </Modal>
